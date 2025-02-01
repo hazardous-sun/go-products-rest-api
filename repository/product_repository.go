@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"go-rest-api/model"
 	"log"
 )
@@ -50,6 +51,28 @@ func (pr *ProductRepository) GetProducts() ([]model.Product, error) {
 	}
 
 	return productList, nil
+}
+
+func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
+	query, err := pr.connection.Prepare("SELECT * FROM products WHERE id = $1")
+
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	var productObj model.Product
+	err = query.QueryRow(id).Scan(&productObj.ID, &productObj.Name, &productObj.Price)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("product not found")
+		} else {
+			return nil, err
+		}
+	}
+
+	return &productObj, nil
 }
 
 func (pr *ProductRepository) CreateProduct(product model.Product) (int, error) {
