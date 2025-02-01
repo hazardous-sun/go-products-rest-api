@@ -36,6 +36,8 @@ func main() {
 	})
 
 	server.GET("/products", productController.GetProducts)
+
+	server.POST("/product", productController.CreateProduct)
 	// -----------------------------------------------------------------------------------------------------------------
 
 	err = server.Run(":8000")
