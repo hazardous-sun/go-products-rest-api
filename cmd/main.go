@@ -3,20 +3,39 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"go-rest-api/controller"
+	"go-rest-api/database"
+	"go-rest-api/repository"
+	"go-rest-api/usecase"
 )
 
 func main() {
 	server := gin.Default()
 
-	ProductController := controller.NewProductController()
+	// Connecting to the database
+	dbConnection, err := database.ConnectDB()
 
+	if err != nil {
+		panic(err)
+	}
+
+	// Repository layer
+	productRepository := repository.NewProductRepository(dbConnection)
+
+	// Use case layer
+	productUsecase := usecase.NewProductUsecase(productRepository)
+
+	// Controller layer
+	productController := controller.NewProductController(productUsecase)
+
+	// Setting up HTTP calls handling ----------------------------------------------------------------------------------
 	server.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
 			"message": "pong",
 		})
 	})
 
-	server.GET("/products", ProductController.GetProducts)
+	server.GET("/products", productController.GetProducts)
+	// -----------------------------------------------------------------------------------------------------------------
 
 	server.Run(":8000")
 }
