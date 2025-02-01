@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"go-rest-api/controller"
-	"go-rest-api/database"
+	"go-rest-api/db"
 	"go-rest-api/repository"
 	"go-rest-api/usecase"
 	"log"
@@ -13,7 +13,7 @@ func main() {
 	server := gin.Default()
 
 	// Connecting to the database
-	dbConnection, err := database.ConnectDB()
+	dbConnection, err := db.ConnectDB()
 
 	if err != nil {
 		panic(err)
