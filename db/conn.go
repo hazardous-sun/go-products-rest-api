@@ -1,4 +1,4 @@
-package AAAAA
+package db
 
 import (
 	"database/sql"
@@ -10,7 +10,7 @@ import (
 func ConnectDB() (*sql.DB, error) {
 	config := LoadConfig()
 	psqlInfo := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		config.Host, config.Port, config.User, config.Password, config.DBName)
 	db, err := sql.Open("postgres", psqlInfo)
 
