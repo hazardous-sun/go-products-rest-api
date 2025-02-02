@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setting environment variables (These are used within the docker-compose.yml, not directly by podman)
-export DB_HOST="go_db" # Although this is set, it is not used correctly. See explanation below.
+export DB_HOST="go-db" # Although this is set, it is not used correctly. See explanation below.
 export DB_PORT="5432" # Although this is set, it is not used correctly. See explanation below.
 export DB_USER="postgres"
 export DB_PASSWORD="1234"
