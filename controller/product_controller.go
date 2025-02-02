@@ -8,17 +8,39 @@ import (
 	"strconv"
 )
 
-type productController struct {
+type ProductController struct {
 	productUseCase usecase.ProductUsecase
 }
 
-func NewProductController(usecase usecase.ProductUsecase) productController {
-	return productController{
+func NewProductController(usecase usecase.ProductUsecase) ProductController {
+	return ProductController{
 		productUseCase: usecase,
 	}
 }
 
-func (p *productController) GetProducts(ctx *gin.Context) {
+// Create --------------------------------------------------------------------------------------------------------------
+
+func (p *ProductController) CreateProduct(ctx *gin.Context) {
+	var product model.Product
+	err := ctx.BindJSON(&product)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	insertedProduct, err := p.productUseCase.CreateProduct(product)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+	}
+
+	ctx.JSON(http.StatusCreated, insertedProduct)
+}
+
+// Read ----------------------------------------------------------------------------------------------------------------
+
+func (p *ProductController) GetProducts(ctx *gin.Context) {
 	products, err := p.productUseCase.GetProducts()
 
 	if err != nil {
@@ -29,7 +51,7 @@ func (p *productController) GetProducts(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, products)
 }
 
-func (p *productController) GetProductById(ctx *gin.Context) {
+func (p *ProductController) GetProductById(ctx *gin.Context) {
 	id := ctx.Param("productId")
 
 	if id == "" {
@@ -68,7 +90,9 @@ func (p *productController) GetProductById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, product)
 }
 
-func (p *productController) CreateProduct(ctx *gin.Context) {
+// Update --------------------------------------------------------------------------------------------------------------
+
+func (p *ProductController) UpdateProduct(ctx *gin.Context) {
 	var product model.Product
 	err := ctx.BindJSON(&product)
 
@@ -77,11 +101,20 @@ func (p *productController) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	insertedProduct, err := p.productUseCase.CreateProduct(product)
+	updatedProduct, err := p.productUseCase.UpdateProduct(product)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		if err.Error() == "product not found" {
+			response := model.Response{
+				Message: "product not found inside the database",
+			}
+			ctx.JSON(http.StatusNotFound, response)
+			return
+		} else {
+			ctx.JSON(http.StatusInternalServerError, err)
+			return
+		}
 	}
 
-	ctx.JSON(http.StatusCreated, insertedProduct)
+	ctx.JSON(http.StatusOK, updatedProduct)
 }
