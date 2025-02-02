@@ -136,7 +136,7 @@ The `docker-compose.yml` file defines two services:
 The `go-app` service depends on the `go-db` service, ensuring that the database is up and running before the application
 starts.
 
-```postgresql
+```sql
 CREATE TABLE products
 (
     ID           SERIAL PRIMARY KEY,
