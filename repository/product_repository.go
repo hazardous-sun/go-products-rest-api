@@ -120,14 +120,12 @@ func (pr *ProductRepository) UpdateProductByID(product model.Product) (*model.Pr
 	_, err := pr.GetProductByID(product.ID)
 
 	if err != nil {
-		panic(err)
 		return nil, err
 	}
 
 	query, err := pr.connection.Prepare("UPDATE products SET product_name = $2, price = $3 WHERE id = $1")
 
 	if err != nil {
-		panic(err)
 		return nil, err
 	}
 
@@ -135,12 +133,7 @@ func (pr *ProductRepository) UpdateProductByID(product model.Product) (*model.Pr
 	err = query.QueryRow(product.ID, product.Name, product.Price).Scan(&productObj.ID, &productObj.Name, &productObj.Price)
 
 	if err != nil {
-		panic(err)
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New("product not found")
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
 
 	return &productObj, nil
