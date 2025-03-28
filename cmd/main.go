@@ -6,6 +6,7 @@ import (
 	"go-rest-api/database"
 	"go-rest-api/repository"
 	"go-rest-api/usecase"
+	"log"
 )
 
 func main() {
@@ -37,5 +38,10 @@ func main() {
 	server.GET("/products", productController.GetProducts)
 	// -----------------------------------------------------------------------------------------------------------------
 
-	server.Run(":8000")
+	err = server.Run(":8000")
+
+	if err != nil {
+		log.Panicln(err)
+		return
+	}
 }
