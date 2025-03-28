@@ -9,6 +9,12 @@ services:
       - "8000:8000"
     depends_on:
       - go_db
+    environment:
+      DB_HOST: go_db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 1234
+      DB_NAME: postgres
   go_db:
     container_name: go_db
     image: docker.io/postgres:12
