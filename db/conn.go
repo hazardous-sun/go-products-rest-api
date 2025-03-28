@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"database/sql"
@@ -7,18 +7,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "1234"
-	dbname   = "postgres"
-)
-
 func ConnectDB() (*sql.DB, error) {
+	config := LoadConfig()
 	psqlInfo := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		config.Host, config.Port, config.User, config.Password, config.DBName)
 	db, err := sql.Open("postgres", psqlInfo)
 
 	if err != nil {
@@ -31,6 +24,6 @@ func ConnectDB() (*sql.DB, error) {
 		panic(err)
 	}
 
-	fmt.Println("Connected to " + dbname)
+	fmt.Println("Connected to " + config.DBName)
 	return db, nil
 }
