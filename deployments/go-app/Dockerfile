@@ -4,7 +4,7 @@ FROM docker.io/golang:1.23
 WORKDIR /go/src/app
 
 # Copy the source code
-COPY . .
+COPY ../.. .
 
 # Expose the port used for the requests
 EXPOSE 8000
