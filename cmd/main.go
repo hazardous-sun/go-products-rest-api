@@ -40,7 +40,7 @@ func main() {
 
 	// Read
 	server.GET("/products", productController.GetProducts)
-	server.GET("/productId", productController.GetProductById)
+	server.GET("/product/:productId", productController.GetProductById)
 	// -----------------------------------------------------------------------------------------------------------------
 
 	err = server.Run(":8000")
