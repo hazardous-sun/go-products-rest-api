@@ -4,7 +4,9 @@ services:
   go-app:
     container_name: go-app
     image: go-rest-api
-    build: deployments/go-app/
+    build:
+      context: .
+      dockerfile: deployments/go-app/Dockerfile
     ports:
       - "8000:8000"
     depends_on:
@@ -18,7 +20,9 @@ services:
   go_db:
     container_name: go-db
     image: postgres-go-api
-    build: deployments/go-db/
+    build:
+      context: .
+      dockerfile: deployments/go-db/Dockerfile
     environment:
       POSTGRES_PASSWORD: 1234
       POSTGRES_USER: postgres
