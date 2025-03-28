@@ -49,12 +49,12 @@ func (pu *ProductUsecase) GetProductById(id int) (*model.Product, error) {
 
 // Update --------------------------------------------------------------------------------------------------------------
 
-func (pu *ProductUsecase) UpdateProduct(product model.Product) (*model.Product, error) {
-	productObj, err := pu.UpdateProduct(product)
+func (pu *ProductUsecase) UpdateProduct(product model.Product) error {
+	productObj, err := pu.productRepository.UpdateProduct(product)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return productObj, err
+	return nil
 }

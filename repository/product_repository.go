@@ -116,25 +116,24 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 
 // UpdateProductByID :
 // Updates a product inside the database that has the same id as the product parameter
-func (pr *ProductRepository) UpdateProductByID(product model.Product) (*model.Product, error) {
+func (pr *ProductRepository) UpdateProductByID(product model.Product) error {
 	_, err := pr.GetProductByID(product.ID)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	query, err := pr.connection.Prepare("UPDATE products SET product_name = $2, price = $3 WHERE id = $1")
+	query, err := pr.connection.Prepare("UPDATE products SET product_name = $1, price = $2 WHERE id = $3")
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var productObj model.Product
-	err = query.QueryRow(product.ID, product.Name, product.Price).Scan(&productObj.ID, &productObj.Name, &productObj.Price)
+	err = query.QueryRow(product.Name, product.Price, product.ID).Scan(nil, nil, nil)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &productObj, nil
+	return nil
 }
