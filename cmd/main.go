@@ -41,6 +41,9 @@ func main() {
 	// Read
 	server.GET("/products", productController.GetProducts)
 	server.GET("/product/:productId", productController.GetProductById)
+
+	// Update
+	server.POST("/updateProduct", productController.UpdateProduct)
 	// -----------------------------------------------------------------------------------------------------------------
 
 	err = server.Run(":8000")

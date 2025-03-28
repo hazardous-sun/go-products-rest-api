@@ -17,12 +17,47 @@ func NewProductRepository(connection *sql.DB) ProductRepository {
 	}
 }
 
+// Create --------------------------------------------------------------------------------------------------------------
+
+// CreateProduct :
+// Creates a new product inside the database based on the model received as parameter.
+func (pr *ProductRepository) CreateProduct(product model.Product) (int, error) {
+	query, err := pr.connection.Prepare(
+		"INSERT INTO products (product_name, price) VALUES ($1, $2) RETURNING id")
+
+	if err != nil {
+		log.Fatalln(err)
+		return -1, err
+	}
+
+	var id int
+	err = query.QueryRow(product.Name, product.Price).Scan(&id)
+
+	if err != nil {
+		log.Fatalln(err)
+		return -1, err
+	}
+
+	err = query.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+		return id, err
+	}
+
+	return id, nil
+}
+
+// Read ----------------------------------------------------------------------------------------------------------------
+
+// GetProducts :
+// Returns all products inside the database.
 func (pr *ProductRepository) GetProducts() ([]model.Product, error) {
 	query := "SELECT * FROM products"
 	rows, err := pr.connection.Query(query)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 		return []model.Product{}, err
 	}
 
@@ -36,7 +71,7 @@ func (pr *ProductRepository) GetProducts() ([]model.Product, error) {
 			&productObj.Price)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 			return []model.Product{}, err
 		}
 
@@ -46,18 +81,20 @@ func (pr *ProductRepository) GetProducts() ([]model.Product, error) {
 	err = rows.Close()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 		return productList, err
 	}
 
 	return productList, nil
 }
 
+// GetProductByID :
+// Returns by id a product inside the database.
 func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 	query, err := pr.connection.Prepare("SELECT * FROM products WHERE id = $1")
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 		return nil, err
 	}
 
@@ -75,29 +112,36 @@ func (pr *ProductRepository) GetProductByID(id int) (*model.Product, error) {
 	return &productObj, nil
 }
 
-func (pr *ProductRepository) CreateProduct(product model.Product) (int, error) {
-	query, err := pr.connection.Prepare(
-		"INSERT INTO products (product_name, price) VALUES ($1, $2) RETURNING id")
+// Update --------------------------------------------------------------------------------------------------------------
+
+// UpdateProductByID :
+// Updates a product inside the database that has the same id as the product parameter
+func (pr *ProductRepository) UpdateProductByID(product model.Product) (*model.Product, error) {
+	_, err := pr.GetProductByID(product.ID)
 
 	if err != nil {
-		log.Fatal(err)
-		return -1, err
+		panic(err)
+		return nil, err
 	}
 
-	var id int
-	err = query.QueryRow(product.Name, product.Price).Scan(&id)
+	query, err := pr.connection.Prepare("UPDATE products SET product_name = $2, price = $3 WHERE id = $1")
 
 	if err != nil {
-		log.Fatal(err)
-		return -1, err
+		panic(err)
+		return nil, err
 	}
 
-	err = query.Close()
+	var productObj model.Product
+	err = query.QueryRow(product.ID, product.Name, product.Price).Scan(&productObj.ID, &productObj.Name, &productObj.Price)
 
 	if err != nil {
-		log.Fatal(err)
-		return id, err
+		panic(err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("product not found")
+		} else {
+			return nil, err
+		}
 	}
 
-	return id, nil
+	return &productObj, nil
 }
