@@ -1,6 +1,9 @@
 package db
 
-import "os"
+import (
+	"log"
+	"os"
+)
 
 type Config struct {
 	Host     string
@@ -11,34 +14,45 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
+	defaultDBHost := "go_db"
+	defaultDBPort := "5432"
+	defaultDBUser := "postgres"
+	defaultDBPassword := "1234"
+	defaultDBName := "postgres"
+
 	Host := os.Getenv("DB_HOST")
 
 	if Host == "" {
-		panic("DB_HOST environment variable not set")
+		log.Println("DB_HOST environment variable not set, setting to default: " + defaultDBHost)
+		Host = defaultDBHost
 	}
 
 	Port := os.Getenv("DB_PORT")
 
 	if Port == "" {
-		panic("DB_PORT environment variable not set")
+		log.Println("DB_PORT environment variable not set, setting to default: " + defaultDBPort)
+		Port = defaultDBPort
 	}
 
 	User := os.Getenv("DB_USER")
 
 	if User == "" {
-		panic("DB_USER environment variable not set")
+		log.Println("DB_USER environment variable not set, setting to default: " + defaultDBUser)
+		User = defaultDBUser
 	}
 
 	Password := os.Getenv("DB_PASSWORD")
 
 	if Password == "" {
-		panic("DB_PASSWORD environment variable not set")
+		log.Println("DB_PASSWORD environment variable not set, setting to default: " + defaultDBPassword)
+		Password = defaultDBPassword
 	}
 
 	DBName := os.Getenv("DB_NAME")
 
 	if DBName == "" {
-		panic("DB_NAME environment variable not set")
+		log.Println("DB_NAME environment variable not set, setting to default: " + defaultDBName)
+		DBName = defaultDBName
 	}
 
 	return &Config{
